@@ -83,7 +83,7 @@ def save_to_db(package, history):
     conn.close()
 
 def sync_data(package):
-    """Sync data: check DB first, fetch only if needed"""
+    """Sync data: check DB first, clean if old, then fetch only if needed"""
     print(f"Checking database for {package}...")
     
     # Check if we have recent data
@@ -94,8 +94,19 @@ def sync_data(package):
         latest_dt = datetime.strptime(latest_date, "%Y-%m-%d")
         days_old = (datetime.now() - latest_dt).days
         
-        # If data is less than 2 days old, skip network request
-        if days_old < 2:
+        # If data is older than 180 days, it's disconnected. Clean it.
+        if days_old > 180:
+            print(f"⚠ Data is disconnected ({latest_date}, {days_old} days old). Cleaning old records...")
+            conn = sqlite3.connect(DB_FILE)
+            c = conn.cursor()
+            c.execute("DELETE FROM downloads WHERE package = ?", (package,))
+            deleted = c.rowcount
+            conn.commit()
+            conn.close()
+            print(f"✓ Removed {deleted} old records to ensure data continuity.")
+            latest_date = None  # Reset so we fetch fresh data
+        elif days_old < 2:
+            # If data is less than 2 days old, skip network request
             print(f"✓ Data is recent ({latest_date}, {days_old} day(s) old)")
             conn = sqlite3.connect(DB_FILE)
             c = conn.cursor()
