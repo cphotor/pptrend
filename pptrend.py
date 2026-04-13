@@ -96,14 +96,11 @@ def sync_data(package):
         
         # If data is older than 180 days, it's disconnected. Clean it.
         if days_old > 180:
-            print(f"⚠ Data is disconnected ({latest_date}, {days_old} days old). Cleaning old records...")
             conn = sqlite3.connect(DB_FILE)
             c = conn.cursor()
             c.execute("DELETE FROM downloads WHERE package = ?", (package,))
-            deleted = c.rowcount
             conn.commit()
             conn.close()
-            print(f"✓ Removed {deleted} old records to ensure data continuity.")
             latest_date = None  # Reset so we fetch fresh data
         elif days_old < 2:
             # If data is less than 2 days old, skip network request
