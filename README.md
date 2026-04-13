@@ -23,25 +23,26 @@ A zero-dependency command-line tool to track and visualize PyPI package download
 
 ## 🚀 Installation
 
-First, ensure you have [uv](https://github.com/astral-sh/uv) installed. If not, you can install it quickly:
+### Option 1: Using uv (Recommended)
+First, install [uv](https://github.com/astral-sh/uv):
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Option 1: Using uvx (Quickest)
-Run `pptrend` directly without installing it permanently:
+Then, choose one of the following ways to run `pptrend`:
+
+**A. Run directly with `uvx` (No installation required):**
 ```bash
 uvx pptrend requests
 ```
 
-### Option 2: Using uv tool install
-Install `pptrend` permanently for faster subsequent runs:
+**B. Install permanently with `uv tool`:**
 ```bash
 uv tool install pptrend
 pptrend requests
 ```
 
-### Option 3: Using pipx
+### Option 2: Using pipx
 `pipx` uses your system's Python installation to run the tool in an isolated environment.
 ```bash
 pipx install pptrend
