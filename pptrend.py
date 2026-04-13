@@ -26,7 +26,7 @@ def get_data_dir():
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
 
-DB_FILE = get_data_dir() / "stats.db"
+DB_FILE = get_data_dir() / "pptrend.db"
 
 def get_existing_dates(package):
     """Get existing dates from database for a package"""
