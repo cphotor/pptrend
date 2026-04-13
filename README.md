@@ -18,7 +18,8 @@ A zero-dependency command-line tool to track and visualize PyPI package download
 
 - **Primary Source**: [PePy.tech](https://pepy.tech/) API.
 - **Fallback Source**: [PyPIStats.org](https://pypistats.org/) API (used if PePy is unavailable).
-- **Data Range**: Both APIs typically provide download statistics for the **last 180 days**. 
+- **Data Range**: APIs provide statistics for the last **180 days**. However, `pptrend` stores data locally, allowing you to build a historical record that extends far beyond 180 days by running the tool periodically.
+- **Data Continuity**: If a package hasn't been updated in the database for more than 180 days, its historical data is considered "disconnected" and can no longer be extended.
 - **Accuracy**: Data is aggregated from PyPI's public BigQuery dataset. Note that download counts may include automated systems (like CI/CD pipelines) and might not represent unique human users.
 
 ## 🚀 Installation
@@ -52,6 +53,12 @@ pptrend numpy
 **Check version:**
 ```bash
 pptrend --version
+```
+
+**Clean disconnected data:**
+If a package hasn't been tracked for over 180 days, its history can no longer be extended. Use this command to remove such stale records:
+```bash
+pptrend --clean <package_name>
 ```
 
 ## 📊 Example Output
