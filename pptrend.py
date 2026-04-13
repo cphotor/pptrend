@@ -177,33 +177,41 @@ def aggregate_data(rows, num_days):
     
     return dates, values, label
 
-def clean_old_data(package):
-    """Remove data for packages where the latest record is older than 180 days"""
+def clean_old_data():
+    """Remove data for all packages where the latest record is older than 180 days"""
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     
-    # Get the latest date for this package
-    c.execute("SELECT MAX(date) FROM downloads WHERE package = ?", (package,))
-    result = c.fetchone()[0]
+    # Get all unique packages
+    c.execute("SELECT DISTINCT package FROM downloads")
+    packages = [row[0] for row in c.fetchall()]
     
-    if not result:
-        print(f"No data to clean for {package}")
+    if not packages:
+        print("No data found in database.")
         conn.close()
         return
 
-    latest_date = datetime.strptime(result, "%Y-%m-%d")
-    days_since_update = (datetime.now() - latest_date).days
+    cleaned_count = 0
+    for package in packages:
+        c.execute("SELECT MAX(date) FROM downloads WHERE package = ?", (package,))
+        result = c.fetchone()[0]
+        if result:
+            latest_date = datetime.strptime(result, "%Y-%m-%d")
+            days_since_update = (datetime.now() - latest_date).days
+            
+            if days_since_update > 180:
+                c.execute("DELETE FROM downloads WHERE package = ?", (package,))
+                deleted = c.rowcount
+                cleaned_count += deleted
+                print(f"  Cleaned {package}: {deleted} records (last updated {days_since_update} days ago)")
     
-    if days_since_update > 180:
-        c.execute("DELETE FROM downloads WHERE package = ?", (package,))
-        deleted_count = c.rowcount
-        conn.commit()
-        print(f"✓ Cleaned {deleted_count} records for {package}")
-        print(f"  Reason: Last update was {days_since_update} days ago (>180 days, data is disconnected).")
-    else:
-        print(f"✓ Data for {package} is still active (last updated {days_since_update} days ago). No cleaning needed.")
-    
+    conn.commit()
     conn.close()
+    
+    if cleaned_count > 0:
+        print(f"\n✓ Successfully cleaned {cleaned_count} old/disconnected records.")
+    else:
+        print("\n✓ All data is up to date. No cleaning needed.")
 
 def show_stats(package):
     """Display download statistics with adaptive ASCII chart"""
@@ -263,7 +271,7 @@ def print_help():
 
 Usage:
   pptrend <package>              Track and visualize download trends
-  pptrend --clean <package>      Remove disconnected historical data
+  pptrend --clean                Remove all disconnected historical data
   pptrend --version              Show version information
   pptrend --help                 Show this help message
 
@@ -302,10 +310,7 @@ def main():
 
     # Check for clean flag
     if sys.argv[1] == "--clean":
-        if len(sys.argv) < 3:
-            print("Usage: pptrend --clean <package>")
-            sys.exit(1)
-        clean_old_data(sys.argv[2])
+        clean_old_data()
         sys.exit(0)
 
     package = sys.argv[1]
