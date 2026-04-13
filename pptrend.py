@@ -172,38 +172,32 @@ def aggregate_data(rows, num_days):
     return dates, values, label
 
 def clean_old_data(package):
-    """Remove data that is disconnected from the most recent continuous block"""
+    """Remove data for packages where the latest record is older than 180 days"""
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute("SELECT date FROM downloads WHERE package = ? ORDER BY date", (package,))
-    all_dates = [row[0] for row in c.fetchall()]
     
-    if not all_dates:
+    # Get the latest date for this package
+    c.execute("SELECT MAX(date) FROM downloads WHERE package = ?", (package,))
+    result = c.fetchone()[0]
+    
+    if not result:
         print(f"No data to clean for {package}")
         conn.close()
         return
 
-    # Find the start of the most recent continuous block
-    # We go backwards from the end
-    last_continuous_date = all_dates[-1]
-    for i in range(len(all_dates) - 2, -1, -1):
-        curr = datetime.strptime(all_dates[i], "%Y-%m-%d")
-        next_d = datetime.strptime(all_dates[i+1], "%Y-%m-%d")
-        if (next_d - curr).days > 7:
-            break
-        last_continuous_date = all_dates[i]
+    latest_date = datetime.strptime(result, "%Y-%m-%d")
+    days_since_update = (datetime.now() - latest_date).days
     
-    # Delete everything before this date
-    c.execute("DELETE FROM downloads WHERE package = ? AND date < ?", (package, last_continuous_date))
-    deleted_count = c.rowcount
-    conn.commit()
-    conn.close()
-    
-    if deleted_count > 0:
-        print(f"✓ Cleaned {deleted_count} old/disconnected records for {package}")
-        print(f"  Kept data from {last_continuous_date} onwards.")
+    if days_since_update > 180:
+        c.execute("DELETE FROM downloads WHERE package = ?", (package,))
+        deleted_count = c.rowcount
+        conn.commit()
+        print(f"✓ Cleaned {deleted_count} records for {package}")
+        print(f"  Reason: Last update was {days_since_update} days ago (>180 days, data is disconnected).")
     else:
-        print(f"✓ Data for {package} is already clean and continuous.")
+        print(f"✓ Data for {package} is still active (last updated {days_since_update} days ago). No cleaning needed.")
+    
+    conn.close()
 
 def show_stats(package):
     """Display download statistics with adaptive ASCII chart"""
@@ -216,26 +210,6 @@ def show_stats(package):
     if not rows:
         print(f"No data for {package}")
         return
-    
-    # Check for data continuity and filter out old gaps
-    continuous_rows = []
-    if rows:
-        # Start from the end (most recent) and go backwards
-        continuous_rows.append(rows[-1])
-        for i in range(len(rows) - 2, -1, -1):
-            curr_date = datetime.strptime(rows[i][0], "%Y-%m-%d")
-            next_date = datetime.strptime(rows[i+1][0], "%Y-%m-%d")
-            # If gap is more than 7 days, stop here
-            if (next_date - curr_date).days > 7:
-                break
-            continuous_rows.append(rows[i])
-        # Reverse back to chronological order
-        continuous_rows.reverse()
-    
-    if len(continuous_rows) < len(rows):
-        print(f"Note: Showing recent continuous data. Older data has gaps.")
-    
-    rows = continuous_rows
     
     # Calculate date range
     first_date = datetime.strptime(rows[0][0], "%Y-%m-%d")
