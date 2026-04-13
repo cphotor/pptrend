@@ -12,7 +12,6 @@ A zero-dependency command-line tool to track and visualize PyPI package download
 - **Adaptive ASCII Charts**: Automatically adjusts the chart granularity (daily, weekly, monthly, or yearly) based on the data range.
 - **Smart Caching**: Stores data locally to minimize API calls. Skips network requests if data is recent.
 - **Cross-Platform**: Works on macOS, Linux, and Windows.
-- **Offline Viewing**: View historical trends instantly from the local database without an internet connection.
 
 ## 📡 Data Source & Limitations
 
@@ -20,16 +19,22 @@ A zero-dependency command-line tool to track and visualize PyPI package download
 - **Fallback Source**: [PyPIStats.org](https://pypistats.org/) API (used if PePy is unavailable).
 - **Data Range**: APIs provide statistics for the last **180 days**. However, `pptrend` stores data locally, allowing you to build a historical record that extends far beyond 180 days by running the tool periodically.
 - **Data Continuity**: If a package hasn't been updated in the database for more than 180 days, its historical data is considered "disconnected" and can no longer be extended.
-- **Accuracy**: Data is aggregated from PyPI's public BigQuery dataset. Note that download counts may include automated systems (like CI/CD pipelines) and might not represent unique human users.
+- **Accuracy**: Download counts are aggregated from PyPI statistics. Note that these figures may include automated systems (like CI/CD pipelines) and might not represent unique human users.
 
 ## 🚀 Installation
 
-### Option 1: Using uv (Recommended)
+### Option 1: Using uvx (Quickest)
 ```bash
-uv tool install pptrend
+uvx pptrend requests
 ```
 
-### Option 2: Using pipx
+### Option 2: Using uv tool install
+```bash
+uv tool install pptrend
+pptrend requests
+```
+
+### Option 3: Using pipx
 ```bash
 pipx install pptrend
 ```
@@ -64,14 +69,14 @@ pptrend --clean <package_name>
 ## 📊 Example Output
 
 ```text
-requests - Week view (181 days of data)
+requests - Week view (180 days of data)
 ======================================================================
 10-13 │                                             │   180.4M
 10-20 │██████████████████████████████████████       │   306.2M
 ...
 04-06 │█████████████████████████████████████████████│   326.7M
 ======================================================================
-Total records: 181 | Periods shown: 26 weeks
+Total records: 180 | Periods shown: 26 weeks
 Min: 178,740,886 | Max: 326,665,297 | Avg: 247,929,848
 ```
 
