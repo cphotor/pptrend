@@ -251,12 +251,41 @@ def show_stats(package):
     print(f"Total records: {len(rows)} | Periods shown: {len(dates)} {period_label}s")
     print(f"Min: {min_val:,} | Max: {max_val:,} | Avg: {sum(downloads)//len(downloads):,}")
 
+def print_help():
+    """Print help message"""
+    help_text = f"""pptrend v{__version__} - PyPI Download Trend Tracker
+
+Usage:
+  pptrend <package>              Track and visualize download trends
+  pptrend --clean <package>      Remove disconnected historical data
+  pptrend --version              Show version information
+  pptrend --help                 Show this help message
+
+Examples:
+  pptrend requests               View download history for 'requests'
+  pptrend flask                  View download history for 'flask'
+  pptrend --clean numpy          Clean old/disconnected data for 'numpy'
+
+Data Storage:
+  Data is stored locally in your system's application data directory.
+  The tool automatically aggregates data from PePy and PyPIStats APIs.
+
+Note:
+  APIs provide statistics for the last 180 days. By running pptrend
+  periodically, you can build a historical record that extends far
+  beyond this limit.
+"""
+    print(help_text)
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: pptrend <package>")
-        print("       pptrend --version")
-        print("       pptrend --clean <package>")
+        print_help()
         sys.exit(1)
+    
+    # Check for help flag
+    if sys.argv[1] in ["--help", "-h"]:
+        print_help()
+        sys.exit(0)
     
     # Check for version flag
     if sys.argv[1] in ["--version", "-v"]:
