@@ -2,6 +2,9 @@
 *.db
 *.jsonl
 
+# Scripts directory (for testing and utilities)
+scripts/
+
 # Python cache
 __pycache__/
 *.py[cod]
