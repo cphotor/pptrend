@@ -1,9 +1,33 @@
+Metadata-Version: 2.4
+Name: pptrend
+Version: 0.1.0
+Summary: A zero-dependency CLI tool to track and visualize PyPI package download trends.
+Author-email: cphotor <cphotor@example.com>
+License: MIT
+Keywords: pypi,downloads,stats,cli,trends
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
 # pptrend
 
-[![PyPI version](https://img.shields.io/pypi/v/pptrend.svg)](https://pypi.org/project/pptrend/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 A zero-dependency command-line tool to track and visualize PyPI package download trends directly in your terminal.
+
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.8+-brightgreen)
 
 ## ✨ Features
 
@@ -42,7 +66,7 @@ pptrend requests
 ```
 
 ### Option 2: Using pipx
-`pipx` installs the tool in an isolated virtual environment, keeping your system clean.
+`pipx` uses your system's Python installation to run the tool in an isolated environment.
 ```bash
 pipx install pptrend
 pptrend requests

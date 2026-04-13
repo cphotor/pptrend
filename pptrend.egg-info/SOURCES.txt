@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pptrend.py
+pyproject.toml
+pptrend.egg-info/PKG-INFO
+pptrend.egg-info/SOURCES.txt
+pptrend.egg-info/dependency_links.txt
+pptrend.egg-info/entry_points.txt
+pptrend.egg-info/top_level.txt

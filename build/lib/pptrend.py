@@ -171,34 +171,6 @@ def aggregate_data(rows, num_days):
     
     return dates, values, label
 
-def clean_old_data(package):
-    """Remove data for packages where the latest record is older than 180 days"""
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    
-    # Get the latest date for this package
-    c.execute("SELECT MAX(date) FROM downloads WHERE package = ?", (package,))
-    result = c.fetchone()[0]
-    
-    if not result:
-        print(f"No data to clean for {package}")
-        conn.close()
-        return
-
-    latest_date = datetime.strptime(result, "%Y-%m-%d")
-    days_since_update = (datetime.now() - latest_date).days
-    
-    if days_since_update > 180:
-        c.execute("DELETE FROM downloads WHERE package = ?", (package,))
-        deleted_count = c.rowcount
-        conn.commit()
-        print(f"✓ Cleaned {deleted_count} records for {package}")
-        print(f"  Reason: Last update was {days_since_update} days ago (>180 days, data is disconnected).")
-    else:
-        print(f"✓ Data for {package} is still active (last updated {days_since_update} days ago). No cleaning needed.")
-    
-    conn.close()
-
 def show_stats(package):
     """Display download statistics with adaptive ASCII chart"""
     conn = sqlite3.connect(DB_FILE)
@@ -251,55 +223,15 @@ def show_stats(package):
     print(f"Total records: {len(rows)} | Periods shown: {len(dates)} {period_label}s")
     print(f"Min: {min_val:,} | Max: {max_val:,} | Avg: {sum(downloads)//len(downloads):,}")
 
-def print_help():
-    """Print help message"""
-    help_text = f"""pptrend v{__version__} - PyPI Download Trend Tracker
-
-Usage:
-  pptrend <package>              Track and visualize download trends
-  pptrend --clean <package>      Remove disconnected historical data
-  pptrend --version              Show version information
-  pptrend --help                 Show this help message
-
-Examples:
-  pptrend requests               View download history for 'requests'
-  pptrend flask                  View download history for 'flask'
-  pptrend --clean numpy          Clean old/disconnected data for 'numpy'
-
-Data Storage:
-  Data is stored locally in your system's application data directory.
-  The tool automatically aggregates data from PePy and PyPIStats APIs.
-
-Note:
-  APIs provide statistics for the last 180 days. By running pptrend
-  periodically, you can build a historical record that extends far
-  beyond this limit.
-
-Star on GitHub: https://github.com/cphotor/pptrend
-Report bugs:    https://github.com/cphotor/pptrend/issues/new"""
-    print(help_text)
-
 def main():
     if len(sys.argv) < 2:
-        print_help()
+        print("Usage: pptrend <package>")
+        print("       pptrend --version")
         sys.exit(1)
-    
-    # Check for help flag
-    if sys.argv[1] in ["--help", "-h"]:
-        print_help()
-        sys.exit(0)
     
     # Check for version flag
     if sys.argv[1] in ["--version", "-v"]:
         print(f"pptrend {__version__}")
-        sys.exit(0)
-
-    # Check for clean flag
-    if sys.argv[1] == "--clean":
-        if len(sys.argv) < 3:
-            print("Usage: pptrend --clean <package>")
-            sys.exit(1)
-        clean_old_data(sys.argv[2])
         sys.exit(0)
 
     package = sys.argv[1]
