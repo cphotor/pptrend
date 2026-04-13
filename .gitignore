@@ -1,6 +1,13 @@
-# Database files
-*.db
-*.jsonl
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
 
 # Scripts directory (for testing and utilities)
 scripts/
