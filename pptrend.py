@@ -171,6 +171,40 @@ def aggregate_data(rows, num_days):
     
     return dates, values, label
 
+def clean_old_data(package):
+    """Remove data that is disconnected from the most recent continuous block"""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT date FROM downloads WHERE package = ? ORDER BY date", (package,))
+    all_dates = [row[0] for row in c.fetchall()]
+    
+    if not all_dates:
+        print(f"No data to clean for {package}")
+        conn.close()
+        return
+
+    # Find the start of the most recent continuous block
+    # We go backwards from the end
+    last_continuous_date = all_dates[-1]
+    for i in range(len(all_dates) - 2, -1, -1):
+        curr = datetime.strptime(all_dates[i], "%Y-%m-%d")
+        next_d = datetime.strptime(all_dates[i+1], "%Y-%m-%d")
+        if (next_d - curr).days > 7:
+            break
+        last_continuous_date = all_dates[i]
+    
+    # Delete everything before this date
+    c.execute("DELETE FROM downloads WHERE package = ? AND date < ?", (package, last_continuous_date))
+    deleted_count = c.rowcount
+    conn.commit()
+    conn.close()
+    
+    if deleted_count > 0:
+        print(f"✓ Cleaned {deleted_count} old/disconnected records for {package}")
+        print(f"  Kept data from {last_continuous_date} onwards.")
+    else:
+        print(f"✓ Data for {package} is already clean and continuous.")
+
 def show_stats(package):
     """Display download statistics with adaptive ASCII chart"""
     conn = sqlite3.connect(DB_FILE)
@@ -247,11 +281,20 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: pptrend <package>")
         print("       pptrend --version")
+        print("       pptrend --clean <package>")
         sys.exit(1)
     
     # Check for version flag
     if sys.argv[1] in ["--version", "-v"]:
         print(f"pptrend {__version__}")
+        sys.exit(0)
+
+    # Check for clean flag
+    if sys.argv[1] == "--clean":
+        if len(sys.argv) < 3:
+            print("Usage: pptrend --clean <package>")
+            sys.exit(1)
+        clean_old_data(sys.argv[2])
         sys.exit(0)
 
     package = sys.argv[1]
