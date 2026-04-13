@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-13
+
+### Changed
+- Improved `--clean` to automatically scan and clean all disconnected packages.
+- Added automatic pre-sync cleanup for packages with data older than 180 days.
+- Updated CLI short flags to uppercase: `-V` for version and `-H` for help.
+- Refined installation documentation and added `uvx` usage examples.
+
 ## [0.1.0] - 2026-04-13
 
 ### Added

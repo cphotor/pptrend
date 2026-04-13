@@ -1,6 +1,6 @@
 [project]
 name = "pptrend"
-version = "0.1.0"
+version = "0.1.1"
 description = "A zero-dependency CLI tool to track and visualize PyPI package download trends."
 readme = "README.md"
 license = {text = "MIT"}
