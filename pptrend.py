@@ -4,12 +4,29 @@ __version__ = "0.1.0"
 import json
 import sqlite3
 import sys
+import platform
 from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from datetime import datetime, timedelta
 
-DB_FILE = Path(__file__).parent / "stats.db"
+def get_data_dir():
+    """Get the appropriate data directory for the current OS"""
+    system = platform.system()
+    app_name = "pptrend"
+    
+    if system == "Windows":
+        base = Path.home() / "AppData" / "Roaming"
+    elif system == "Darwin":  # macOS
+        base = Path.home() / "Library" / "Application Support"
+    else:  # Linux and others
+        base = Path.home() / ".local" / "share"
+    
+    data_dir = base / app_name
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return data_dir
+
+DB_FILE = get_data_dir() / "stats.db"
 
 def get_existing_dates(package):
     """Get existing dates from database for a package"""
