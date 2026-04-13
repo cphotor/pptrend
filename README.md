@@ -1,6 +1,6 @@
 # pptrend
 
-[![PyPI version](https://img.shields.io/pypi/v/pptrend.svg)](https://pypi.org/project/pptrend/)
+[![PyPI version](https://img.shields.io/pypi/v/pptrend.svg?v=2)](https://pypi.org/project/pptrend/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A zero-dependency command-line tool to track and visualize PyPI package download trends directly in your terminal.
