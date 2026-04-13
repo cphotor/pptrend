@@ -1,6 +1,5 @@
 #!/usr/bin/env -S uv run --script
 """PyPI Download History Fetcher - Zero Dependencies"""
-__version__ = "0.1.0"
 import json
 import sqlite3
 import sys
@@ -9,6 +8,13 @@ from pathlib import Path
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from datetime import datetime, timedelta
+
+try:
+    from importlib.metadata import version as get_version
+    __version__ = get_version("pptrend")
+except Exception:
+    # Fallback for development or if package is not installed
+    __version__ = "0.1.0"
 
 def get_data_dir():
     """Get the appropriate data directory for the current OS"""
