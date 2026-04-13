@@ -286,7 +286,7 @@ Usage:
 Examples:
   pptrend requests               View download history for 'requests'
   pptrend flask                  View download history for 'flask'
-  pptrend --clean numpy          Clean old/disconnected data for 'numpy'
+  pptrend --clean                Clean all disconnected data automatically
 
 Data Storage:
   Data is stored locally in your system's application data directory.
