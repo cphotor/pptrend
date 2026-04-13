@@ -280,8 +280,8 @@ def print_help():
 Usage:
   pptrend <package>              Track and visualize download trends
   pptrend --clean                Remove all disconnected historical data
-  pptrend --version              Show version information
-  pptrend --help                 Show this help message
+  pptrend --version, -V          Show version information
+  pptrend --help, -H             Show this help message
 
 Examples:
   pptrend requests               View download history for 'requests'
@@ -307,12 +307,12 @@ def main():
         sys.exit(1)
     
     # Check for help flag
-    if sys.argv[1] in ["--help", "-h"]:
+    if sys.argv[1] in ["--help", "-H"]:
         print_help()
         sys.exit(0)
     
     # Check for version flag
-    if sys.argv[1] in ["--version", "-v"]:
+    if sys.argv[1] in ["--version", "-V"]:
         print(f"pptrend {__version__}")
         sys.exit(0)
 
