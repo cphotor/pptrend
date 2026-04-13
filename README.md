@@ -14,6 +14,13 @@ A zero-dependency command-line tool to track and visualize PyPI package download
 - **Cross-Platform**: Works on macOS, Linux, and Windows.
 - **Offline Viewing**: View historical trends instantly from the local database without an internet connection.
 
+## 📡 Data Source & Limitations
+
+- **Primary Source**: [PePy.tech](https://pepy.tech/) API.
+- **Fallback Source**: [PyPIStats.org](https://pypistats.org/) API (used if PePy is unavailable).
+- **Data Range**: Both APIs typically provide download statistics for the **last 180 days**. 
+- **Accuracy**: Data is aggregated from PyPI's public BigQuery dataset. Note that download counts may include automated systems (like CI/CD pipelines) and might not represent unique human users.
+
 ## 🚀 Installation
 
 ### Option 1: Using uv (Recommended)
