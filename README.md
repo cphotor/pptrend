@@ -43,7 +43,7 @@ pptrend requests
 ```
 
 ### Option 2: Using pipx
-`pipx` uses your system's Python installation to run the tool in an isolated environment.
+`pipx` installs the tool in an isolated virtual environment, keeping your system clean.
 ```bash
 pipx install pptrend
 pptrend requests
