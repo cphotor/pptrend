@@ -1,5 +1,6 @@
 #!/usr/bin/env -S uv run --script
 """PyPI Download History Fetcher - Zero Dependencies"""
+__version__ = "0.1.0"
 import json
 import sqlite3
 import sys
@@ -207,8 +208,14 @@ def show_stats(package):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: dlchart <package>")
+        print("Usage: pptrend <package>")
+        print("       pptrend --version")
         sys.exit(1)
+    
+    # Check for version flag
+    if sys.argv[1] in ["--version", "-v"]:
+        print(f"pptrend {__version__}")
+        sys.exit(0)
 
     package = sys.argv[1]
 
