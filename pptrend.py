@@ -183,6 +183,26 @@ def show_stats(package):
         print(f"No data for {package}")
         return
     
+    # Check for data continuity and filter out old gaps
+    continuous_rows = []
+    if rows:
+        # Start from the end (most recent) and go backwards
+        continuous_rows.append(rows[-1])
+        for i in range(len(rows) - 2, -1, -1):
+            curr_date = datetime.strptime(rows[i][0], "%Y-%m-%d")
+            next_date = datetime.strptime(rows[i+1][0], "%Y-%m-%d")
+            # If gap is more than 7 days, stop here
+            if (next_date - curr_date).days > 7:
+                break
+            continuous_rows.append(rows[i])
+        # Reverse back to chronological order
+        continuous_rows.reverse()
+    
+    if len(continuous_rows) < len(rows):
+        print(f"Note: Showing recent continuous data. Older data has gaps.")
+    
+    rows = continuous_rows
+    
     # Calculate date range
     first_date = datetime.strptime(rows[0][0], "%Y-%m-%d")
     last_date = datetime.strptime(rows[-1][0], "%Y-%m-%d")
