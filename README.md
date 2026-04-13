@@ -70,9 +70,9 @@ pptrend --version
 ```
 
 **Clean disconnected data:**
-If a package hasn't been tracked for over 180 days, its history can no longer be extended. Use this command to remove such stale records:
+If a package hasn't been tracked for over 180 days, its history can no longer be extended. Use this command to automatically scan and remove such stale records for all packages:
 ```bash
-pptrend --clean <package_name>
+pptrend --clean
 ```
 
 ## 📊 Example Output
