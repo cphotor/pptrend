@@ -14,7 +14,7 @@ try:
     __version__ = get_version("pptrend")
 except Exception:
     # Fallback for development or if package is not installed
-    __version__ = "0.1.0"
+    __version__ = "0.1.2"
 
 def get_data_dir():
     """Get the appropriate data directory for the current OS"""
@@ -221,6 +221,36 @@ def clean_old_data():
     else:
         print("\n✓ All data is up to date. No cleaning needed.")
 
+def fill_missing_dates(rows):
+    """Fill in missing dates with 0 downloads, extending to yesterday if needed"""
+    if not rows:
+        return rows
+    
+    # Convert to dict for easy lookup
+    data_dict = {row[0]: row[1] for row in rows}
+    
+    # Get date range from data
+    first_date = datetime.strptime(rows[0][0], "%Y-%m-%d")
+    last_date_in_db = datetime.strptime(rows[-1][0], "%Y-%m-%d")
+    
+    # Extend to yesterday if the last date is more than 1 day ago
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    yesterday = today - timedelta(days=1)
+    
+    # If last date in DB is before yesterday, extend the range
+    end_date = max(last_date_in_db, yesterday)
+    
+    # Fill in all dates in range
+    filled_rows = []
+    current_date = first_date
+    while current_date <= end_date:
+        date_str = current_date.strftime("%Y-%m-%d")
+        downloads = data_dict.get(date_str, 0)
+        filled_rows.append((date_str, downloads))
+        current_date += timedelta(days=1)
+    
+    return filled_rows
+
 def show_stats(package):
     """Display download statistics with adaptive ASCII chart"""
     conn = sqlite3.connect(DB_FILE)
@@ -232,6 +262,9 @@ def show_stats(package):
     if not rows:
         print(f"No data for {package}")
         return
+    
+    # Fill in missing dates with 0 downloads
+    rows = fill_missing_dates(rows)
     
     # Calculate date range
     first_date = datetime.strptime(rows[0][0], "%Y-%m-%d")
@@ -306,22 +339,24 @@ def main():
         print_help()
         sys.exit(1)
     
+    arg = sys.argv[1]
+    
     # Check for help flag
-    if sys.argv[1] in ["--help", "-H"]:
+    if arg in ["--help", "-H"]:
         print_help()
         sys.exit(0)
     
     # Check for version flag
-    if sys.argv[1] in ["--version", "-V"]:
+    if arg in ["--version", "-V"]:
         print(f"pptrend {__version__}")
         sys.exit(0)
 
     # Check for clean flag
-    if sys.argv[1] == "--clean":
+    if arg == "--clean":
         clean_old_data()
         sys.exit(0)
 
-    package = sys.argv[1]
+    package = arg
 
     try:
         # Sync data (check DB first, fetch only missing)
@@ -330,6 +365,9 @@ def main():
         # Show adaptive chart
         show_stats(package)
 
+    except KeyboardInterrupt:
+        print("\n\nOperation cancelled by user.")
+        sys.exit(130)  # Standard exit code for Ctrl+C
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

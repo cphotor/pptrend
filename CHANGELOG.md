@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-23
+
+### Fixed
+- Fixed command-line argument parsing to correctly handle `--help`, `--version`, and `--clean` flags without triggering network requests
+- Added graceful handling of `KeyboardInterrupt` (Ctrl+C) with user-friendly cancellation message instead of stack trace
+
+### Improved
+- Fill missing dates with 0 downloads in display for complete timeline visualization
+- Auto-extend date range to yesterday when last database record is outdated, showing potential gaps
+- Updated `.gitignore` to exclude `stats.db` database file
+- Synchronized version numbers across `pyproject.toml` and `pptrend.py`
+
 ## [0.1.1] - 2026-04-13
 
 ### Changed
