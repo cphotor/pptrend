@@ -88,7 +88,6 @@ def sync_data(package):
     
     # Check if we have recent data
     latest_date = get_latest_date(package)
-    today = datetime.now().strftime("%Y-%m-%d")
     
     if latest_date:
         latest_dt = datetime.strptime(latest_date, "%Y-%m-%d")
@@ -114,7 +113,7 @@ def sync_data(package):
             return count
     
     # Fetch new data
-    print(f"Fetching latest data from API...")
+    print("Fetching latest data from API...")
     all_history = fetch_history(package)
     
     # Get existing dates to filter
@@ -360,7 +359,7 @@ def main():
 
     try:
         # Sync data (check DB first, fetch only missing)
-        total_records = sync_data(package)
+        sync_data(package)
         
         # Show adaptive chart
         show_stats(package)
