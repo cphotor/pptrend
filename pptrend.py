@@ -14,7 +14,7 @@ try:
     __version__ = get_version("pptrend")
 except Exception:
     # Fallback for development or if package is not installed
-    __version__ = "0.1.2"
+    __version__ = "0.1.3"
 
 def get_data_dir():
     """Get the appropriate data directory for the current OS"""
